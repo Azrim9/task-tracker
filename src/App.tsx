@@ -1,9 +1,7 @@
-import { useState } from "react";
+import TaskForm from "./components/TaskForm";
 
 function App() {
-  const [count, setCount] = useState(0);
-
-  return <div className="text-center">hi</div>;
+  return <TaskForm />;
 }
 
 export default App;
