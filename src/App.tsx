@@ -1,11 +1,12 @@
 import { useState } from "react";
 import TaskForm from "./components/TaskForm";
 import TaskList from "./components/TaskList";
+import type { Task } from "./types";
 
 function App() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
-  const handleAddTask = (text) => {
+  const handleAddTask = (text: string) => {
     const newTask = {
       id: crypto.randomUUID(),
       name: text,
@@ -14,7 +15,7 @@ function App() {
     setTasks((prev) => [...prev, newTask]);
   };
 
-  const handleToggleTaskCompleted = (id) => {
+  const handleToggleTaskCompleted = (id: string) => {
     setTasks((prev) =>
       prev.map((task) =>
         task.id === id ? { ...task, completed: !task.completed } : task
@@ -22,8 +23,14 @@ function App() {
     );
   };
 
-  const handleDeleteTask = (id) => {
+  const handleDeleteTask = (id: string) => {
     setTasks((prev) => prev.filter((task) => task.id !== id));
+  };
+
+  const handleEditTask = (id: string, newName: string) => {
+    setTasks((prev) =>
+      prev.map((task) => (task.id === id ? { ...task, name: newName } : task))
+    );
   };
 
   return (
@@ -31,6 +38,7 @@ function App() {
       <TaskForm onAddTask={handleAddTask} />
       <TaskList
         tasks={tasks}
+        onEditTask={handleEditTask}
         onToggleTaskCompleted={handleToggleTaskCompleted}
         onDeleteTask={handleDeleteTask}
       />
