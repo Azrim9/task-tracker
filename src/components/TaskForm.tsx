@@ -1,24 +1,32 @@
 import { useState } from "react";
 
 interface TaskFormProps {
-  onAddTask: (name: string) => void;
+  onAddTask: (title: string, description: string) => void;
 }
 
 const TaskForm: React.FC<TaskFormProps> = ({ onAddTask }) => {
-  const [text, setText] = useState("");
+  const [titleText, setTitleText] = useState("");
+  const [descriptionText, setDescriptionText] = useState("");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onAddTask(text);
-    setText("");
+    onAddTask(titleText, descriptionText);
+    setTitleText("");
+    setDescriptionText("");
   };
 
   return (
     <form onSubmit={handleSubmit} className="flex gap-2 mx-2 my-2">
       <input
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Add a Task"
-        value={text}
+        onChange={(e) => setTitleText(e.target.value)}
+        placeholder="Title"
+        value={titleText}
+        className="border rounded-sm px-2 py-1"
+      />
+      <input
+        onChange={(e) => setDescriptionText(e.target.value)}
+        placeholder="Description"
+        value={descriptionText}
         className="border rounded-sm px-2 py-1"
       />
       <button

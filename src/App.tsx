@@ -6,10 +6,11 @@ import type { Task } from "./types";
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  const handleAddTask = (text: string) => {
+  const handleAddTask = (title: string, description: string) => {
     const newTask = {
       id: crypto.randomUUID(),
-      name: text,
+      title: title,
+      description: description,
       completed: false,
     };
     setTasks((prev) => [...prev, newTask]);
@@ -27,9 +28,17 @@ function App() {
     setTasks((prev) => prev.filter((task) => task.id !== id));
   };
 
-  const handleEditTask = (id: string, newName: string) => {
+  const handleEditTask = (
+    id: string,
+    updatedTitle: string,
+    updatedDescription: string
+  ) => {
     setTasks((prev) =>
-      prev.map((task) => (task.id === id ? { ...task, name: newName } : task))
+      prev.map((task) =>
+        task.id === id
+          ? { ...task, title: updatedTitle, description: updatedDescription }
+          : task
+      )
     );
   };
 

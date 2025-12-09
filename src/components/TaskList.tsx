@@ -5,7 +5,11 @@ interface TaskListProps {
   tasks: Task[];
   onToggleTaskCompleted: (id: string) => void;
   onDeleteTask: (id: string) => void;
-  onEditTask: (id: string, newName: string) => void;
+  onEditTask: (
+    id: string,
+    updatedTitle: string,
+    updatedDescription: string
+  ) => void;
 }
 
 const TaskList: React.FC<TaskListProps> = ({
