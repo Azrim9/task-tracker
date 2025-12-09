@@ -1,9 +1,13 @@
 import { useState } from "react";
 
-const TaskForm = ({ onAddTask }) => {
+interface TaskFormProps {
+  onAddTask: (name: string) => void;
+}
+
+const TaskForm: React.FC<TaskFormProps> = ({ onAddTask }) => {
   const [text, setText] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onAddTask(text);
     setText("");
