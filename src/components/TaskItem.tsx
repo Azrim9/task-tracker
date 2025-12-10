@@ -30,8 +30,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
   };
 
   return (
-    <div>
-      <li>
+    <li className="flex items-center justify-between border border-gray-300 rounded-lg p-3 bg-white shadow-sm">
+      <div className="flex items-center gap-3 w-[90%]">
         <input
           type="checkbox"
           checked={task.completed}
@@ -39,30 +39,48 @@ const TaskItem: React.FC<TaskItemProps> = ({
         />
 
         {!isEditing ? (
-          <div>
-            <div>{task.title}</div>
-            <div>{task.description}</div>
+          <div
+            className={`flex flex-col overflow-y-auto max-h-36 break-all ${
+              task.completed ? "line-through text-gray-400" : ""
+            }`}
+          >
+            <div className="text-lg font-semibold">{task.title}</div>
+            <div className="text-sm text-gray-700">{task.description}</div>
           </div>
         ) : (
-          <div>
+          <div className="flex flex-col gap-2 w-[80%]">
+            Title:
             <input
               onChange={(e) => setTitleText(e.target.value)}
-              className="border rounded-sm px-2 py-1"
+              className="border rounded-md px-2 py-1 text-sm focus:outline-blue-500 w-[50%]"
               value={titleText}
             />
-            <input
+            Description:
+            <textarea
               onChange={(e) => setDescriptionText(e.target.value)}
-              className="border rounded-sm px-1 py-1"
+              className="border rounded-md px-2 py-1 text-sm focus:outline-blue-500 w-full"
+              rows={10}
               value={descriptionText}
             />
           </div>
         )}
-        <button onClick={() => onDeleteTask(task.id)}> Delete </button>
-        <button onClick={() => handleEditClick()}>
+      </div>
+
+      <div className="flex gap-1">
+        <button
+          className="bg-blue-600 hover:bg-blue-400 text-white px-2 py-1 rounded-md text-sm"
+          onClick={() => handleEditClick()}
+        >
           {!isEditing ? "Edit" : "Save"}
         </button>
-      </li>
-    </div>
+        <button
+          className="bg-red-600 hover:bg-red-400 text-white px-2 py-1 rounded-md text-sm"
+          onClick={() => onDeleteTask(task.id)}
+        >
+          Delete
+        </button>
+      </div>
+    </li>
   );
 };
 

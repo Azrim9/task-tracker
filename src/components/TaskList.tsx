@@ -19,7 +19,7 @@ const TaskList: React.FC<TaskListProps> = ({
   onEditTask,
 }) => {
   return (
-    <div>
+    <div className="max-w-full mx-auto px-4">
       <ul>
         {tasks.map((task) => (
           <TaskItem
