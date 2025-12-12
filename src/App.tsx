@@ -2,9 +2,17 @@ import { useState } from "react";
 import TaskForm from "./components/TaskForm";
 import TaskList from "./components/TaskList";
 import type { Task } from "./types";
+import TaskFilterButtons from "./components/TaskFilterButtons";
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [filter, setFilter] = useState<"All" | "Active" | "Completed">("All");
+
+  const filteredTasks = tasks.filter((task) => {
+    if (filter === "Active") return !task.completed;
+    if (filter === "Completed") return task.completed;
+    return task;
+  });
 
   const handleAddTask = (title: string, description: string) => {
     const newTask = {
@@ -45,8 +53,9 @@ function App() {
   return (
     <div>
       <TaskForm onAddTask={handleAddTask} />
+      <TaskFilterButtons currentFilter={filter} onChangeFilter={setFilter} />
       <TaskList
-        tasks={tasks}
+        tasks={filteredTasks}
         onEditTask={handleEditTask}
         onToggleTaskCompleted={handleToggleTaskCompleted}
         onDeleteTask={handleDeleteTask}

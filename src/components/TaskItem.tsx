@@ -33,9 +33,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
     <li className="flex items-center justify-between border border-gray-300 rounded-lg p-3 bg-white shadow-sm w-[98%]">
       <div className="flex items-center gap-3 w-full">
         <input
+          onChange={() => onToggleTaskCompleted(task.id)}
           type="checkbox"
           checked={task.completed}
-          onChange={() => onToggleTaskCompleted(task.id)}
         />
 
         {!isEditing ? (
@@ -68,14 +68,14 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
       <div className="flex gap-1">
         <button
-          className="bg-blue-600 hover:bg-blue-400 text-white px-2 py-1 rounded-md text-sm"
           onClick={() => handleEditClick()}
+          className="bg-blue-600 hover:bg-blue-400 text-white px-2 py-1 rounded-md text-sm"
         >
           {!isEditing ? "Edit" : "Save"}
         </button>
         <button
-          className="bg-red-600 hover:bg-red-400 text-white px-2 py-1 rounded-md text-sm"
           onClick={() => onDeleteTask(task.id)}
+          className="bg-red-600 hover:bg-red-400 text-white px-2 py-1 rounded-md text-sm"
         >
           Delete
         </button>
