@@ -1,9 +1,9 @@
+type FilterType = "All" | "Active" | "Completed";
 const filters = ["All", "Active", "Completed"] as const;
-type FilterType = (typeof filters)[number];
 
 interface TaskFilterButtons {
   currentFilter: FilterType;
-  onChangeFilter: (newFilter: "All" | "Active" | "Completed") => void;
+  onChangeFilter: (newFilter: FilterType) => void;
 }
 
 const TaskFilterButtons: React.FC<TaskFilterButtons> = ({
