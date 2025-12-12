@@ -18,9 +18,14 @@ const TaskList: React.FC<TaskListProps> = ({
   onDeleteTask,
   onEditTask,
 }) => {
+  if (tasks.length === 0) {
+    return (
+      <div className="text-gray-500 text-center py-4">No tasks yet...</div>
+    );
+  }
   return (
-    <div className="max-w-full mx-auto px-4">
-      <ul>
+    <div>
+      <ul className="flex flex-col gap-3 w-full items-center">
         {tasks.map((task) => (
           <TaskItem
             key={task.id}

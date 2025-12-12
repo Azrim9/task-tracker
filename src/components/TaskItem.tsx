@@ -30,8 +30,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
   };
 
   return (
-    <li className="flex items-center justify-between border border-gray-300 rounded-lg p-3 bg-white shadow-sm">
-      <div className="flex items-center gap-3 w-[90%]">
+    <li className="flex items-center justify-between border border-gray-300 rounded-lg p-3 bg-white shadow-sm w-[98%]">
+      <div className="flex items-center gap-3 w-full">
         <input
           type="checkbox"
           checked={task.completed}
