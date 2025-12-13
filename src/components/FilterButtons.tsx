@@ -1,12 +1,12 @@
 type FilterType = "All" | "Active" | "Completed";
 const filters = ["All", "Active", "Completed"] as const;
 
-interface TaskFilterButtons {
+interface FilterButtons {
   currentFilter: FilterType;
   onChangeFilter: (newFilter: FilterType) => void;
 }
 
-const TaskFilterButtons: React.FC<TaskFilterButtons> = ({
+const TaskFilterButtons: React.FC<FilterButtons> = ({
   currentFilter,
   onChangeFilter,
 }) => {

@@ -2,7 +2,8 @@ import { useState } from "react";
 import TaskForm from "./components/TaskForm";
 import TaskList from "./components/TaskList";
 import type { Task } from "./types";
-import TaskFilterButtons from "./components/TaskFilterButtons";
+import FilterButtons from "./components/FilterButtons";
+import DeleteAllCompletedButton from "./components/DeleteAllCompletedButton";
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -24,14 +25,6 @@ function App() {
     setTasks((prev) => [...prev, newTask]);
   };
 
-  const handleToggleTaskCompleted = (id: string) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
-
   const handleDeleteTask = (id: string) => {
     setTasks((prev) => prev.filter((task) => task.id !== id));
   };
@@ -50,10 +43,26 @@ function App() {
     );
   };
 
+  const handleToggleTaskCompleted = (id: string) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
+    );
+  };
+
+  const handleDeleteTaskCompleted = () => {
+    setTasks((prev) => prev.filter((task) => !task.completed));
+  };
+
   return (
-    <div>
+    <div className="flex flex-col">
       <TaskForm onAddTask={handleAddTask} />
-      <TaskFilterButtons currentFilter={filter} onChangeFilter={setFilter} />
+      <FilterButtons currentFilter={filter} onChangeFilter={setFilter} />
+      <DeleteAllCompletedButton
+        tasks={tasks}
+        onDeleteTaskCompleted={handleDeleteTaskCompleted}
+      />
       <TaskList
         tasks={filteredTasks}
         onEditTask={handleEditTask}
