@@ -2,18 +2,29 @@ import { useState } from "react";
 import TaskForm from "./components/TaskForm";
 import TaskList from "./components/TaskList";
 import type { Task } from "./types";
-import FilterButtons from "./components/FilterButtons";
+import TaskFilterButtons from "./components/TaskFilterButtons";
 import DeleteAllCompletedButton from "./components/DeleteAllCompletedButton";
+import TaskSearch from "./components/TaskSearch";
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<"All" | "Active" | "Completed">("All");
+  const [search, setSearch] = useState<string>("");
 
-  const filteredTasks = tasks.filter((task) => {
-    if (filter === "Active") return !task.completed;
-    if (filter === "Completed") return task.completed;
-    return task;
-  });
+  const filteredTasks = tasks
+    .filter((task) => {
+      if (filter === "Active") return !task.completed;
+      if (filter === "Completed") return task.completed;
+      return task;
+    })
+    .filter((task) => {
+      const searchText = search.toLowerCase();
+
+      return (
+        task.title.toLowerCase().includes(searchText) ||
+        task.description.toLowerCase().includes(searchText)
+      );
+    });
 
   const handleAddTask = (title: string, description: string) => {
     const newTask = {
@@ -57,8 +68,9 @@ function App() {
 
   return (
     <div className="flex flex-col">
+      <TaskSearch search={search} onSearchChange={setSearch} />
       <TaskForm onAddTask={handleAddTask} />
-      <FilterButtons currentFilter={filter} onChangeFilter={setFilter} />
+      <TaskFilterButtons currentFilter={filter} onChangeFilter={setFilter} />
       <DeleteAllCompletedButton
         tasks={tasks}
         onDeleteTaskCompleted={handleDeleteTaskCompleted}

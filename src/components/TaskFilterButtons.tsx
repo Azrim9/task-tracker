@@ -14,6 +14,7 @@ const TaskFilterButtons: React.FC<FilterButtons> = ({
     <div className="flex justify-center gap-2">
       {filters.map((filter) => (
         <button
+          key={filter}
           onClick={() => onChangeFilter(filter)}
           className={`border rounded-md px-3 py-1 text-white 
             ${
