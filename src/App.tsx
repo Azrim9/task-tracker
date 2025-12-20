@@ -5,11 +5,16 @@ import type { Task } from "./types";
 import TaskFilterButtons from "./components/TaskFilterButtons";
 import DeleteAllCompletedButton from "./components/DeleteAllCompletedButton";
 import TaskSearch from "./components/TaskSearch";
+import TaskStats from "./components/TaskStats";
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<"All" | "Active" | "Completed">("All");
   const [search, setSearch] = useState<string>("");
+
+  const totalTaskCount = tasks.length;
+  const completedTaskCount = tasks.filter((task) => task.completed).length;
+  const activeTaskCount = tasks.filter((task) => !task.completed).length;
 
   const filteredTasks = tasks
     .filter((task) => {
@@ -17,14 +22,11 @@ function App() {
       if (filter === "Completed") return task.completed;
       return task;
     })
-    .filter((task) => {
-      const searchText = search.toLowerCase();
-
-      return (
-        task.title.toLowerCase().includes(searchText) ||
-        task.description.toLowerCase().includes(searchText)
-      );
-    });
+    .filter(
+      (task) =>
+        task.title.toLowerCase().includes(search.toLowerCase()) ||
+        task.description.toLowerCase().includes(search.toLowerCase())
+    );
 
   const handleAddTask = (title: string, description: string) => {
     const newTask = {
@@ -68,7 +70,15 @@ function App() {
 
   return (
     <div className="flex flex-col">
-      <TaskSearch search={search} onSearchChange={setSearch} />
+      <div className="flex items-center justify-between px-2">
+        <TaskSearch search={search} onSearchChange={setSearch} />
+        <TaskStats
+          total={totalTaskCount}
+          active={activeTaskCount}
+          completed={completedTaskCount}
+        />
+      </div>
+
       <TaskForm onAddTask={handleAddTask} />
       <TaskFilterButtons currentFilter={filter} onChangeFilter={setFilter} />
       <DeleteAllCompletedButton
