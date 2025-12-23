@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TaskForm from "./components/TaskForm";
 import TaskList from "./components/TaskList";
 import type { Task } from "./types";
@@ -8,9 +8,17 @@ import TaskSearch from "./components/TaskSearch";
 import TaskStats from "./components/TaskStats";
 
 function App() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    const savedTasks = localStorage.getItem("tasks");
+    return savedTasks ? JSON.parse(savedTasks) : [];
+  });
+
   const [filter, setFilter] = useState<"All" | "Active" | "Completed">("All");
   const [search, setSearch] = useState<string>("");
+
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
 
   const totalTaskCount = tasks.length;
   const completedTaskCount = tasks.filter((task) => task.completed).length;
