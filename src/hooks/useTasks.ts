@@ -9,6 +9,7 @@ const useTasks = () => {
 
   const [filter, setFilter] = useState<"All" | "Active" | "Completed">("All");
   const [search, setSearch] = useState<string>("");
+  const [sortBy, setSortBy] = useState<"None" | "Title" | "Completed">("None");
 
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -29,6 +30,17 @@ const useTasks = () => {
         task.title.toLowerCase().includes(search.toLowerCase()) ||
         task.description.toLowerCase().includes(search.toLowerCase())
     );
+
+  const sortedTasks = [...filteredTasks].sort((a, b) => {
+    if (sortBy === "Title") {
+      return a.title.localeCompare(b.title);
+    }
+
+    if (sortBy === "Completed") {
+      return Number(b.completed) - Number(a.completed);
+    }
+    return 0;
+  });
 
   const handleAddTask = (title: string, description: string) => {
     const newTask = {
@@ -74,12 +86,15 @@ const useTasks = () => {
     tasks,
     filter,
     search,
+    sortBy,
     filteredTasks,
+    sortedTasks,
     totalTaskCount,
     completedTaskCount,
     activeTaskCount,
     setFilter,
     setSearch,
+    setSortBy,
     handleAddTask,
     handleDeleteTask,
     handleEditTask,
