@@ -5,18 +5,22 @@ import DeleteAllCompletedButton from "./components/DeleteAllCompletedButton";
 import TaskSearch from "./components/TaskSearch";
 import TaskStats from "./components/TaskStats";
 import useTasks from "./hooks/useTasks";
+import TaskSortButtons from "./components/TaskSortButtons";
 
 function App() {
   const {
     tasks,
     filter,
     search,
+    sortBy,
     filteredTasks,
+    sortedTasks,
     totalTaskCount,
     completedTaskCount,
     activeTaskCount,
     setFilter,
     setSearch,
+    setSortBy,
     handleAddTask,
     handleDeleteTask,
     handleEditTask,
@@ -41,8 +45,9 @@ function App() {
         tasks={tasks}
         onDeleteTaskCompleted={handleDeleteTaskCompleted}
       />
+      <TaskSortButtons sortBy={sortBy} onSetSortBy={setSortBy} />
       <TaskList
-        tasks={filteredTasks}
+        tasks={sortedTasks}
         onEditTask={handleEditTask}
         onToggleTaskCompleted={handleToggleTaskCompleted}
         onDeleteTask={handleDeleteTask}
