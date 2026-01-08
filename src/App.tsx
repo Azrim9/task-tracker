@@ -13,7 +13,6 @@ function App() {
     filter,
     search,
     sortBy,
-    filteredTasks,
     sortedTasks,
     totalTaskCount,
     completedTaskCount,
