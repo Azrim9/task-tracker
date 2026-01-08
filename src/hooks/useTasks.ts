@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Task } from "../types";
 
 const useTasks = () => {
@@ -7,40 +7,55 @@ const useTasks = () => {
     return savedTasks ? JSON.parse(savedTasks) : [];
   });
 
-  const [filter, setFilter] = useState<"All" | "Active" | "Completed">("All");
-  const [search, setSearch] = useState<string>("");
-  const [sortBy, setSortBy] = useState<"None" | "Title" | "Completed">("None");
+  const [filter, setFilter] = useState<"All" | "Active" | "Completed">(() => {
+    return JSON.parse(localStorage.getItem("filter") ?? "All");
+  });
+
+  const [sortBy, setSortBy] = useState<"None" | "Title" | "Completed">(() => {
+    return JSON.parse(localStorage.getItem("sortBy") ?? "None");
+  });
+
+  const [search, setSearch] = useState<string>(() => {
+    return localStorage.getItem("search") ?? "";
+  });
 
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
-  }, [tasks]);
+    localStorage.setItem("filter", JSON.stringify(filter));
+    localStorage.setItem("sortBy", JSON.stringify(sortBy));
+    localStorage.setItem("search", search);
+  }, [tasks, filter, sortBy, search]);
 
   const totalTaskCount = tasks.length;
   const completedTaskCount = tasks.filter((task) => task.completed).length;
   const activeTaskCount = tasks.filter((task) => !task.completed).length;
 
-  const filteredTasks = tasks
-    .filter((task) => {
-      if (filter === "Active") return !task.completed;
-      if (filter === "Completed") return task.completed;
-      return task;
-    })
-    .filter(
-      (task) =>
-        task.title.toLowerCase().includes(search.toLowerCase()) ||
-        task.description.toLowerCase().includes(search.toLowerCase())
-    );
+  const filteredTasks = useMemo(() => {
+    return tasks
+      .filter((task) => {
+        if (filter === "Active") return !task.completed;
+        if (filter === "Completed") return task.completed;
+        return task;
+      })
+      .filter(
+        (task) =>
+          task.title.toLowerCase().includes(search.toLowerCase()) ||
+          task.description.toLowerCase().includes(search.toLowerCase())
+      );
+  }, [tasks, filter, search]);
 
-  const sortedTasks = [...filteredTasks].sort((a, b) => {
-    if (sortBy === "Title") {
-      return a.title.localeCompare(b.title);
-    }
+  const sortedTasks = useMemo(() => {
+    return [...filteredTasks].sort((a, b) => {
+      if (sortBy === "Title") {
+        return a.title.localeCompare(b.title);
+      }
 
-    if (sortBy === "Completed") {
-      return Number(b.completed) - Number(a.completed);
-    }
-    return 0;
-  });
+      if (sortBy === "Completed") {
+        return Number(b.completed) - Number(a.completed);
+      }
+      return 0;
+    });
+  }, [filteredTasks, sortBy]);
 
   const handleAddTask = (title: string, description: string) => {
     const newTask = {
