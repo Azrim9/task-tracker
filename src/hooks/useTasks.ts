@@ -1,8 +1,48 @@
-import { useEffect, useMemo, useState } from "react";
-import type { Task } from "../types";
+import { useEffect, useMemo, useState, useReducer } from "react";
+import type { Task, TasksAction } from "../types";
+
+const tasksReducer = (state: Task[], action: TasksAction) => {
+  switch (action.type) {
+    case "ADD_TASK":
+      return [
+        ...state,
+        {
+          id: crypto.randomUUID(),
+          title: action.title,
+          description: action.description,
+          completed: false,
+        },
+      ];
+
+    case "DELETE_TASK":
+      return state.filter((task) => task.id !== action.id);
+
+    case "EDIT_TASK":
+      return state.map((task) =>
+        task.id === action.id
+          ? {
+              ...task,
+              title: action.updatedTitle,
+              description: action.updatedDescription,
+            }
+          : task
+      );
+
+    case "TOGGLE_TASK":
+      return state.map((task) =>
+        task.id === action.id ? { ...task, completed: !task.completed } : task
+      );
+
+    case "DELETE_COMPLETED":
+      return state.filter((task) => !task.completed);
+
+    default:
+      return state;
+  }
+};
 
 const useTasks = () => {
-  const [tasks, setTasks] = useState<Task[]>(() => {
+  const [tasks, dispatch] = useReducer(tasksReducer, [], () => {
     const savedTasks = localStorage.getItem("tasks");
     return savedTasks ? JSON.parse(savedTasks) : [];
   });
@@ -35,7 +75,7 @@ const useTasks = () => {
       .filter((task) => {
         if (filter === "Active") return !task.completed;
         if (filter === "Completed") return task.completed;
-        return task;
+        if (filter === "All") return true;
       })
       .filter(
         (task) =>
@@ -58,17 +98,11 @@ const useTasks = () => {
   }, [filteredTasks, sortBy]);
 
   const handleAddTask = (title: string, description: string) => {
-    const newTask = {
-      id: crypto.randomUUID(),
-      title: title,
-      description: description,
-      completed: false,
-    };
-    setTasks((prev) => [...prev, newTask]);
+    dispatch({ type: "ADD_TASK", title, description });
   };
 
   const handleDeleteTask = (id: string) => {
-    setTasks((prev) => prev.filter((task) => task.id !== id));
+    dispatch({ type: "DELETE_TASK", id });
   };
 
   const handleEditTask = (
@@ -76,25 +110,15 @@ const useTasks = () => {
     updatedTitle: string,
     updatedDescription: string
   ) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id
-          ? { ...task, title: updatedTitle, description: updatedDescription }
-          : task
-      )
-    );
+    dispatch({ type: "EDIT_TASK", id, updatedTitle, updatedDescription });
   };
 
   const handleToggleTaskCompleted = (id: string) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
+    dispatch({ type: "TOGGLE_TASK", id });
   };
 
   const handleDeleteTaskCompleted = () => {
-    setTasks((prev) => prev.filter((task) => !task.completed));
+    dispatch({ type: "DELETE_COMPLETED" });
   };
 
   return {
