@@ -4,8 +4,8 @@ import TaskFilterButtons from "./components/TaskFilterButtons";
 import DeleteAllCompletedButton from "./components/DeleteAllCompletedButton";
 import TaskSearch from "./components/TaskSearch";
 import TaskStats from "./components/TaskStats";
-import useTasks from "./hooks/useTasks";
 import TaskSortButtons from "./components/TaskSortButtons";
+import { useTasksContext } from "./tasks-contexts";
 
 function App() {
   const {
@@ -25,7 +25,7 @@ function App() {
     handleEditTask,
     handleToggleTaskCompleted,
     handleDeleteTaskCompleted,
-  } = useTasks();
+  } = useTasksContext();
 
   return (
     <div className="flex flex-col">
