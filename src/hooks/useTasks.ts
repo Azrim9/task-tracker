@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, useReducer } from "react";
 import type { Task, TasksAction } from "../types";
+import { testFetchTasks } from "../testAPI";
 
 const tasksReducer = (state: Task[], action: TasksAction) => {
   switch (action.type) {
@@ -36,16 +37,19 @@ const tasksReducer = (state: Task[], action: TasksAction) => {
     case "DELETE_COMPLETED":
       return state.filter((task) => !task.completed);
 
+    case "SET_TASKS":
+      return action.tasks;
+
     default:
       return state;
   }
 };
 
 const useTasks = () => {
-  const [tasks, dispatch] = useReducer(tasksReducer, [], () => {
-    const savedTasks = localStorage.getItem("tasks");
-    return savedTasks ? JSON.parse(savedTasks) : [];
-  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [tasks, dispatch] = useReducer(tasksReducer, []);
 
   const [filter, setFilter] = useState<"All" | "Active" | "Completed">(() => {
     return JSON.parse(localStorage.getItem("filter") ?? "All");
@@ -60,11 +64,26 @@ const useTasks = () => {
   });
 
   useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
     localStorage.setItem("filter", JSON.stringify(filter));
     localStorage.setItem("sortBy", JSON.stringify(sortBy));
     localStorage.setItem("search", search);
-  }, [tasks, filter, sortBy, search]);
+  }, [filter, sortBy, search]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    setError(null);
+
+    testFetchTasks()
+      .then((data) => {
+        dispatch({ type: "SET_TASKS", tasks: data });
+      })
+      .catch(() => {
+        setError("Failed to load tasks");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
 
   const totalTaskCount = tasks.length;
   const completedTaskCount = tasks.filter((task) => task.completed).length;
@@ -126,6 +145,8 @@ const useTasks = () => {
     filter,
     search,
     sortBy,
+    isLoading,
+    error,
     filteredTasks,
     sortedTasks,
     totalTaskCount,

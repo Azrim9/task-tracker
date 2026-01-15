@@ -13,6 +13,8 @@ function App() {
     filter,
     search,
     sortBy,
+    isLoading,
+    error,
     sortedTasks,
     totalTaskCount,
     completedTaskCount,
@@ -30,6 +32,8 @@ function App() {
   return (
     <div className="flex flex-col">
       <div className="flex items-center justify-between px-2">
+        {isLoading && <div>Loading tasks...</div>}
+        {error && <div>{error}</div>}
         <TaskSearch search={search} onSearchChange={setSearch} />
         <TaskStats
           total={totalTaskCount}
