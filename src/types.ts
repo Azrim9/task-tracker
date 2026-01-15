@@ -25,4 +25,5 @@ export type TasksAction =
   | { type: "DELETE_COMPLETED" }
   | { type: "SET_FILTER"; filter: TasksState["filter"] }
   | { type: "SET_SORT"; sortBy: TasksState["sortBy"] }
-  | { type: "SET_SEARCH"; search: string };
+  | { type: "SET_SEARCH"; search: string }
+  | { type: "SET_TASKS"; tasks: Task[] };
