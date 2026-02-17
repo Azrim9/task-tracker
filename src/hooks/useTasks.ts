@@ -1,55 +1,12 @@
-import { useEffect, useMemo, useState, useReducer } from "react";
-import type { Task, TasksAction } from "../types";
-import { testFetchTasks } from "../testAPI";
-
-const tasksReducer = (state: Task[], action: TasksAction) => {
-  switch (action.type) {
-    case "ADD_TASK":
-      return [
-        ...state,
-        {
-          id: crypto.randomUUID(),
-          title: action.title,
-          description: action.description,
-          completed: false,
-        },
-      ];
-
-    case "DELETE_TASK":
-      return state.filter((task) => task.id !== action.id);
-
-    case "EDIT_TASK":
-      return state.map((task) =>
-        task.id === action.id
-          ? {
-              ...task,
-              title: action.updatedTitle,
-              description: action.updatedDescription,
-            }
-          : task
-      );
-
-    case "TOGGLE_TASK":
-      return state.map((task) =>
-        task.id === action.id ? { ...task, completed: !task.completed } : task
-      );
-
-    case "DELETE_COMPLETED":
-      return state.filter((task) => !task.completed);
-
-    case "SET_TASKS":
-      return action.tasks;
-
-    default:
-      return state;
-  }
-};
+import { useEffect, useMemo, useState } from "react";
+import type { Task } from "../types";
+import { fetchTasks } from "../testAPI";
 
 const useTasks = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [tasks, dispatch] = useReducer(tasksReducer, []);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const [filter, setFilter] = useState<"All" | "Active" | "Completed">(() => {
     return JSON.parse(localStorage.getItem("filter") ?? "All");
@@ -73,9 +30,9 @@ const useTasks = () => {
     setIsLoading(true);
     setError(null);
 
-    testFetchTasks()
+    fetchTasks()
       .then((data) => {
-        dispatch({ type: "SET_TASKS", tasks: data });
+        setTasks(data);
       })
       .catch(() => {
         setError("Failed to load tasks");
@@ -86,58 +43,71 @@ const useTasks = () => {
   }, []);
 
   const totalTaskCount = tasks.length;
-  const completedTaskCount = tasks.filter((task) => task.completed).length;
-  const activeTaskCount = tasks.filter((task) => !task.completed).length;
+  const completedTaskCount = tasks.filter((t) => t.completed).length;
+  const activeTaskCount = tasks.filter((t) => !t.completed).length;
 
   const filteredTasks = useMemo(() => {
     return tasks
       .filter((task) => {
         if (filter === "Active") return !task.completed;
         if (filter === "Completed") return task.completed;
-        if (filter === "All") return true;
+        return true;
       })
       .filter(
         (task) =>
           task.title.toLowerCase().includes(search.toLowerCase()) ||
-          task.description.toLowerCase().includes(search.toLowerCase())
+          task.description.toLowerCase().includes(search.toLowerCase()),
       );
   }, [tasks, filter, search]);
 
   const sortedTasks = useMemo(() => {
     return [...filteredTasks].sort((a, b) => {
-      if (sortBy === "Title") {
-        return a.title.localeCompare(b.title);
-      }
-
-      if (sortBy === "Completed") {
+      if (sortBy === "Title") return a.title.localeCompare(b.title);
+      if (sortBy === "Completed")
         return Number(b.completed) - Number(a.completed);
-      }
       return 0;
     });
   }, [filteredTasks, sortBy]);
 
   const handleAddTask = (title: string, description: string) => {
-    dispatch({ type: "ADD_TASK", title, description });
+    const newTask: Task = {
+      id: crypto.randomUUID(),
+      title,
+      description,
+      completed: false,
+    };
+
+    setTasks((prev) => [...prev, newTask]);
   };
 
   const handleDeleteTask = (id: string) => {
-    dispatch({ type: "DELETE_TASK", id });
+    setTasks((prev) => prev.filter((task) => task.id !== id));
   };
 
   const handleEditTask = (
     id: string,
     updatedTitle: string,
-    updatedDescription: string
+    updatedDescription: string,
   ) => {
-    dispatch({ type: "EDIT_TASK", id, updatedTitle, updatedDescription });
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id
+          ? { ...task, title: updatedTitle, description: updatedDescription }
+          : task,
+      ),
+    );
   };
 
   const handleToggleTaskCompleted = (id: string) => {
-    dispatch({ type: "TOGGLE_TASK", id });
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task,
+      ),
+    );
   };
 
   const handleDeleteTaskCompleted = () => {
-    dispatch({ type: "DELETE_COMPLETED" });
+    setTasks((prev) => prev.filter((task) => !task.completed));
   };
 
   return {
