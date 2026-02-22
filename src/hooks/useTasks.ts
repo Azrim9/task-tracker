@@ -9,11 +9,13 @@ const useTasks = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   const [filter, setFilter] = useState<"All" | "Active" | "Completed">(() => {
-    return JSON.parse(localStorage.getItem("filter") ?? "All");
+    const saved = localStorage.getItem("filter");
+    return (saved as "All" | "Active" | "Completed") ?? "All";
   });
 
   const [sortBy, setSortBy] = useState<"None" | "Title" | "Completed">(() => {
-    return JSON.parse(localStorage.getItem("sortBy") ?? "None");
+    const saved = localStorage.getItem("sortBy");
+    return (saved as "None" | "Title" | "Completed") ?? "None";
   });
 
   const [search, setSearch] = useState<string>(() => {
@@ -21,8 +23,8 @@ const useTasks = () => {
   });
 
   useEffect(() => {
-    localStorage.setItem("filter", JSON.stringify(filter));
-    localStorage.setItem("sortBy", JSON.stringify(sortBy));
+    localStorage.setItem("filter", filter);
+    localStorage.setItem("sortBy", sortBy);
     localStorage.setItem("search", search);
   }, [filter, sortBy, search]);
 
